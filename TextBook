@@ -1,0 +1,175 @@
+import java.awt.*;
+import javax.swing.*;
+
+public class UcTextBook extends JFrame {
+
+    public UcTextBook() {
+        setTitle("University of Cebu Login");
+        setSize(900, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        JPanel leftPanel = new JPanel() {
+            Image bg = new ImageIcon("c:\\Users\\ASUS\\Documents\\Ucimage.png").getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        leftPanel.setLayout(new GridBagLayout());
+        leftPanel.setPreferredSize(new Dimension(450, 500));
+
+        // RIGHT PANEL (LOGIN)
+        JPanel rightPanel = new JPanel();
+        rightPanel.setBackground(new Color(70, 82, 92));
+        rightPanel.setLayout(null);
+
+        JLabel loginLabel = new JLabel("LOGIN");
+        loginLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        loginLabel.setForeground(Color.WHITE);
+        loginLabel.setBounds(160, 40, 200, 40);
+
+        JLabel userLabel = new JLabel("USERNAME");
+        userLabel.setForeground(Color.WHITE);
+        userLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        userLabel.setBounds(70, 120, 200, 20);
+
+        JTextField userField = new JTextField();
+        userField.setBounds(70, 145, 300, 35);
+
+        JLabel passLabel = new JLabel("PASSWORD");
+        passLabel.setForeground(Color.WHITE);
+        passLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        passLabel.setBounds(70, 200, 200, 20);
+
+        JPasswordField passField = new JPasswordField();
+        passField.setBounds(70, 225, 300, 35);
+
+        JButton loginBtn = new JButton("Login");
+        loginBtn.setBounds(73, 290, 100, 40);
+
+        JLabel signUpText = new JLabel("Don't have an account?");
+        signUpText.setForeground(Color.WHITE);
+        signUpText.setBounds(110, 350, 150, 20);
+
+        JButton signUpBtn = new JButton("Sign Up");
+        signUpBtn.setBounds(250, 345, 100, 30);
+
+        signUpBtn.addActionListener(e -> {
+            new SignUpForm();
+            dispose();
+        });
+
+        rightPanel.add(loginLabel);
+        rightPanel.add(userLabel);
+        rightPanel.add(userField);
+        rightPanel.add(passLabel);
+        rightPanel.add(passField);
+        rightPanel.add(loginBtn);
+        rightPanel.add(signUpText);
+        rightPanel.add(signUpBtn);
+
+        add(leftPanel, BorderLayout.WEST);
+        add(rightPanel, BorderLayout.CENTER);
+
+        setVisible(true);
+    }
+
+    public class SignUpForm extends JFrame {
+
+        public SignUpForm() {
+
+            setTitle("Create Account");
+            setSize(900, 500);
+            setLocationRelativeTo(null);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLayout(new BorderLayout());
+
+            JPanel leftPanel = new JPanel() {
+                Image bg = new ImageIcon("c:\\Users\\ASUS\\Documents\\Ucimage.png").getImage();
+
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
+                }
+            };
+            leftPanel.setPreferredSize(new Dimension(450, 500));
+
+            JPanel rightPanel = new JPanel();
+            rightPanel.setBackground(new Color(70, 82, 92));
+            rightPanel.setLayout(null);
+
+            JLabel title = new JLabel("CREATE ACCOUNT");
+            title.setForeground(Color.WHITE);
+            title.setFont(new Font("Arial", Font.BOLD, 26));
+            title.setBounds(120, 30, 300, 40);
+
+            JLabel userLabel = new JLabel("USERNAME");
+            userLabel.setForeground(Color.WHITE);
+            userLabel.setBounds(70, 110, 200, 20);
+
+            JTextField userField = new JTextField();
+            userField.setBounds(70, 135, 350, 35);
+
+            JLabel passLabel = new JLabel("PASSWORD");
+            passLabel.setForeground(Color.WHITE);
+            passLabel.setBounds(70, 185, 200, 20);
+
+            JPasswordField passField = new JPasswordField();
+            passField.setBounds(70, 210, 350, 35);
+
+            JLabel confirmLabel = new JLabel("CONFIRM PASSWORD");
+            confirmLabel.setForeground(Color.WHITE);
+            confirmLabel.setBounds(70, 260, 200, 20);
+
+            JPasswordField confirmField = new JPasswordField();
+            confirmField.setBounds(70, 285, 350, 35);
+
+            JButton createBtn = new JButton("Sign Up");
+            createBtn.setBounds(180, 340, 120, 40);
+
+            createBtn.addActionListener(e -> {
+                String user = userField.getText();
+                String pass = new String(passField.getPassword());
+                String confirm = new String(confirmField.getPassword());
+
+                if (user.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "All fields are required!");
+                    return;
+                }
+
+                if (!pass.equals(confirm)) {
+                    JOptionPane.showMessageDialog(this, "Passwords do not match!");
+                    return;
+                }
+
+                JOptionPane.showMessageDialog(this, "Account created successfully!");
+
+                new UcTextBook();
+                dispose();
+            });
+
+            rightPanel.add(title);
+            rightPanel.add(userLabel);
+            rightPanel.add(userField);
+            rightPanel.add(passLabel);
+            rightPanel.add(passField);
+            rightPanel.add(confirmLabel);
+            rightPanel.add(confirmField);
+            rightPanel.add(createBtn);
+
+            add(leftPanel, BorderLayout.WEST);
+            add(rightPanel, BorderLayout.CENTER);
+
+            setVisible(true);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new UcTextBook());
+    }
+}
