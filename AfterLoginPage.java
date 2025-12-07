@@ -20,22 +20,45 @@ public class AfterLoginPage extends JFrame {
             Graphics2D g2 = (Graphics2D) g;
             g2.setColor(color);
             g2.setStroke(new BasicStroke(thickness));
-            g2.drawRoundRect(x + thickness / 2, y + thickness / 2, width - thickness, height - thickness, radius, radius);
+            g2.drawRoundRect(
+                x + thickness / 2,
+                y + thickness / 2,
+                width - thickness,
+                height - thickness,
+                radius, radius
+            );
         }
     }
 
-    public AfterLoginPage() {
+    private JPanel mainPanel;
+    private JPanel categoryPanel;
+    private JPanel banner;
+    private JScrollPane scrollPane;
 
+    public AfterLoginPage() {
         setTitle("UC Textbook Portal - Home");
         setSize(1200, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel();
+        mainPanel = new JPanel();
         mainPanel.setLayout(null);
         mainPanel.setBackground(Color.WHITE);
-        mainPanel.setPreferredSize(new Dimension(1200, 800)); 
+        mainPanel.setPreferredSize(new Dimension(1200, 900));
 
+        createTopNavigation();
+        createBanner("BANNER", "");
+        createMenuPanel();
+        createCategoryPanel("CCS");
+
+        scrollPane = new JScrollPane(mainPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        setContentPane(scrollPane);
+        setVisible(true);
+    }
+
+    private void createTopNavigation() {
         JPanel topNav = new JPanel();
         topNav.setLayout(null);
         topNav.setBackground(Color.WHITE);
@@ -64,27 +87,36 @@ public class AfterLoginPage extends JFrame {
         topNav.add(userButton);
 
         mainPanel.add(topNav);
+    }
 
-        JPanel banner = new JPanel();
+    private void createBanner(String titleText, String subtitleText) {
+        if (banner != null) mainPanel.remove(banner); // remove old banner
+
+        banner = new JPanel();
         banner.setLayout(null);
         banner.setBackground(Color.BLACK);
         banner.setBounds(40, 100, 1100, 220);
         banner.setBorder(new RoundedBorder(30, Color.BLACK, 4));
 
-        JLabel bannerText = new JLabel("BANNER");
+        JLabel bannerText = new JLabel(titleText, SwingConstants.CENTER);
         bannerText.setForeground(Color.WHITE);
         bannerText.setFont(new Font("Arial", Font.BOLD, 36));
-        bannerText.setBounds(480, 80, 300, 50);
+        bannerText.setBounds(0, 80, 1100, 50);
         banner.add(bannerText);
 
-        JLabel dots = new JLabel("● ● ●");
-        dots.setFont(new Font("Arial", Font.BOLD, 18));
-        dots.setForeground(Color.WHITE);
-        dots.setBounds(540, 155, 80, 30);
-        banner.add(dots);
+        if (!subtitleText.isEmpty()) {
+            JLabel subtitle = new JLabel(subtitleText, SwingConstants.CENTER);
+            subtitle.setForeground(Color.WHITE);
+            subtitle.setFont(new Font("Arial", Font.PLAIN, 20));
+            subtitle.setBounds(0, 140, 1100, 40);
+            banner.add(subtitle);
+        }
 
         mainPanel.add(banner);
+        mainPanel.repaint();
+    }
 
+    private void createMenuPanel() {
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 5));
         menuPanel.setBackground(Color.WHITE);
@@ -101,22 +133,59 @@ public class AfterLoginPage extends JFrame {
             menuLabel.setHorizontalAlignment(SwingConstants.CENTER);
             menuPanel.add(menuLabel);
 
-            if (item.equals("Departments")) {
+            if (item.equals("Home")) {
+                menuLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mouseClicked(java.awt.event.MouseEvent e) {
+                        createBanner("BANNER", "");
+                        createCategoryPanel("CCS");
+                    }
+                });
+            } else if (item.equals("Departments")) {
+
                 JPopupMenu deptMenu = new JPopupMenu();
-                String[] departments = {"BASIC ED", "CBA", "CHM", "CCS", "COF"};
+                deptMenu.setBorder(new RoundedBorder(20, Color.GRAY, 2));
+
+                String[] departments = {"CBA", "CHM", "CCS", "COF"};
+                int fixedWidth = menuLabel.getPreferredSize().width;
 
                 for (String dept : departments) {
                     JMenuItem menuItem = new JMenuItem(dept);
+                    menuItem.setPreferredSize(new Dimension(fixedWidth, 30));
+
                     menuItem.addActionListener(e -> {
-                        JOptionPane.showMessageDialog(this, "You selected: " + dept);
+                        switch (dept) {
+                            case "CBA":
+                                createBanner("CBA", "COLLEGE OF BUSINESS ADMINISTRATION");
+                                createCategoryPanel("CBA");
+                                break;
+                            case "CHM":
+                                createBanner("CHM", "COLLEGE OF HOSPITALITY MANAGEMENT");
+                                createCategoryPanel("CHM");
+                                break;
+                            case "CCS":
+                                createBanner("CCS", "COLLEGE OF COMPUTER STUDIES");
+                                createCategoryPanel("CCS");
+                                break;
+                            case "COF":
+                                createBanner("COF", "COLLEGE OF FINE ARTS");
+                                createCategoryPanel("COF");
+                                break;
+                        }
                     });
+
                     deptMenu.add(menuItem);
                 }
 
                 menuLabel.addMouseListener(new java.awt.event.MouseAdapter() {
                     @Override
                     public void mouseClicked(java.awt.event.MouseEvent e) {
-                        deptMenu.show(menuLabel, 0, menuLabel.getHeight());
+                        deptMenu.pack();
+                        int labelWidth = menuLabel.getWidth();
+                        int popupWidth = deptMenu.getPreferredSize().width;
+                        int x = (labelWidth - popupWidth) / 2;
+                        int y = menuLabel.getHeight();
+                        deptMenu.show(menuLabel, x, y);
                     }
                 });
             } else {
@@ -130,37 +199,73 @@ public class AfterLoginPage extends JFrame {
         }
 
         mainPanel.add(menuPanel);
-            JPanel categoryPanel = new JPanel();
-            categoryPanel.setLayout(null);
-            categoryPanel.setBackground(new Color(233, 236, 239));
-            categoryPanel.setBounds(50, 370, 1100, 320);
-            categoryPanel.setBorder(new RoundedBorder(30, Color.GRAY, 4));
+    }
 
-            JLabel ccsTitle = new JLabel("CCS", SwingConstants.CENTER);
-            ccsTitle.setFont(new Font("Arial", Font.BOLD, 28));
-            ccsTitle.setForeground(new Color(20, 40, 100));
-            ccsTitle.setBounds(0, 10, 1100, 40);
-            categoryPanel.add(ccsTitle);
+    private void createCategoryPanel(String department) {
+        if (categoryPanel != null) mainPanel.remove(categoryPanel);
 
-            JLabel subtitle = new JLabel("COLLEGE OF COMPUTER STUDIES", SwingConstants.CENTER);
-            subtitle.setFont(new Font("Arial", Font.PLAIN, 18));
-            subtitle.setBounds(0, 45, 1100, 30);
-            categoryPanel.add(subtitle);
+        categoryPanel = new JPanel();
+        categoryPanel.setLayout(null);
+        categoryPanel.setBackground(new Color(233, 236, 239));
+        categoryPanel.setBounds(50, 370, 1100, 320);
+        categoryPanel.setBorder(new RoundedBorder(30, Color.GRAY, 4));
 
+        JLabel title = new JLabel(department, SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 28));
+        title.setForeground(new Color(20, 40, 100));
+        title.setBounds(0, 10, 1100, 40);
+        categoryPanel.add(title);
 
-            String[] images = {
-            "c:\\Users\\ASUS\\Documents\\CCS_Image1.png",
-            "c:\\Users\\ASUS\\Documents\\CCS_Image2.png",
-            "c:\\Users\\ASUS\\Documents\\CCS_Image3.png",
-            "c:\\Users\\ASUS\\Documents\\CCS_Image4.png"
-            };
+        JLabel subtitle = new JLabel("", SwingConstants.CENTER);
+        subtitle.setFont(new Font("Arial", Font.PLAIN, 18));
+        subtitle.setBounds(0, 45, 1100, 30);
+        categoryPanel.add(subtitle);
 
-            for (int i = 0; i < 4; i++) {
-            JPanel block = new JPanel();
+        String[] images;
+        switch (department) {
+            case "CBA":
+                subtitle.setText("COLLEGE OF BUSINESS ADMINISTRATION");
+                images = new String[]{
+                        "c:\\Users\\ASUS\\Documents\\CBA_Image1.png",
+                        "c:\\Users\\ASUS\\Documents\\CBA_Image2.png",
+                        "c:\\Users\\ASUS\\Documents\\CBA_Image3.png",
+                        "c:\\Users\\ASUS\\Documents\\CBA_Image4.png"
+                };
+                break;
+            case "CHM":
+                subtitle.setText("COLLEGE OF HOSPITALITY MANAGEMENT");
+                images = new String[]{
+                        "c:\\Users\\ASUS\\Documents\\CHM_Image1.png",
+                        "c:\\Users\\ASUS\\Documents\\CHM_Image2.png",
+                        "c:\\Users\\ASUS\\Documents\\CHM_Image3.png",
+                        "c:\\Users\\ASUS\\Documents\\CHM_Image4.png"
+                };
+                break;
+            case "COF":
+                subtitle.setText("COLLEGE OF FINE ARTS");
+                images = new String[]{
+                        "c:\\Users\\ASUS\\Documents\\COF_Image1.png",
+                        "c:\\Users\\ASUS\\Documents\\COF_Image2.png",
+                        "c:\\Users\\ASUS\\Documents\\COF_Image3.png",
+                        "c:\\Users\\ASUS\\Documents\\COF_Image4.png"
+                };
+                break;
+            default: // CCS
+                subtitle.setText("COLLEGE OF COMPUTER STUDIES");
+                images = new String[]{
+                        "c:\\Users\\ASUS\\Documents\\CCS_Image1.png",
+                        "c:\\Users\\ASUS\\Documents\\CCS_Image2.png",
+                        "c:\\Users\\ASUS\\Documents\\CCS_Image3.png",
+                        "c:\\Users\\ASUS\\Documents\\CCS_Image4.png"
+                };
+                break;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            JPanel block = new JPanel(new BorderLayout());
             block.setBackground(Color.WHITE);
             block.setBounds(70 + (i * 250), 100, 200, 180);
             block.setBorder(new RoundedBorder(20, Color.GRAY, 3));
-            block.setLayout(new BorderLayout());
 
             ImageIcon icon = new ImageIcon(images[i]);
             Image img = icon.getImage().getScaledInstance(200, 180, Image.SCALE_SMOOTH);
@@ -171,16 +276,10 @@ public class AfterLoginPage extends JFrame {
         }
 
         mainPanel.add(categoryPanel);
-
-        JScrollPane scrollPane = new JScrollPane(mainPanel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        setContentPane(scrollPane);
-
-        setVisible(true);
+        mainPanel.repaint();
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new AfterLoginPage());
+        SwingUtilities.invokeLater(AfterLoginPage::new);
     }
 }
