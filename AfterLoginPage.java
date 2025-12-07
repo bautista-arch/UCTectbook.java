@@ -12,8 +12,17 @@ public class AfterLoginPage extends JFrame {
         setLayout(null);
         getContentPane().setBackground(Color.WHITE);
 
-        JPanel topNav = new JPanel();
-        topNav.setLayout(null);
+        addTopNav();
+        addBanner();
+        addMenu();
+        addCategoryPanel();
+
+        setVisible(true);
+    }
+
+    // ---------------- TOP NAVIGATION BAR ----------------
+    private void addTopNav() {
+        JPanel topNav = new JPanel(null);
         topNav.setBackground(Color.WHITE);
         topNav.setBounds(0, 0, 1200, 70);
 
@@ -40,9 +49,11 @@ public class AfterLoginPage extends JFrame {
         topNav.add(userButton);
 
         add(topNav);
+    }
 
-        JPanel banner = new JPanel();
-        banner.setLayout(null);
+    // ---------------- BANNER SECTION ----------------
+    private void addBanner() {
+        JPanel banner = new JPanel(null);
         banner.setBackground(Color.BLACK);
         banner.setBounds(50, 90, 1100, 220);
         banner.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
@@ -50,7 +61,7 @@ public class AfterLoginPage extends JFrame {
         JLabel bannerText = new JLabel("BANNER");
         bannerText.setForeground(Color.WHITE);
         bannerText.setFont(new Font("Arial", Font.BOLD, 36));
-        bannerText.setBounds(480, 80, 300, 50);
+        bannerText.setBounds(430, 80, 300, 50);
         banner.add(bannerText);
 
         JLabel dots = new JLabel("● ● ●");
@@ -60,9 +71,11 @@ public class AfterLoginPage extends JFrame {
         banner.add(dots);
 
         add(banner);
+    }
 
-        JPanel menuPanel = new JPanel();
-        menuPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 5));
+    // ---------------- MENU BAR ----------------
+    private void addMenu() {
+        JPanel menuPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 5));
         menuPanel.setBackground(Color.WHITE);
         menuPanel.setBounds(0, 320, 1200, 40);
 
@@ -76,34 +89,40 @@ public class AfterLoginPage extends JFrame {
         }
 
         add(menuPanel);
+    }
 
-        JPanel categoryPanel = new JPanel();
-        categoryPanel.setLayout(null);
-        categoryPanel.setBackground(new Color(233, 236, 239));
-        categoryPanel.setBounds(50, 370, 1100, 320);
-        categoryPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 3));
+    // ---------------- CATEGORY PANEL ----------------
+    private void addCategoryPanel() {
+        JPanel category = new JPanel(null);
+        category.setBackground(new Color(233, 236, 239));
+        category.setBounds(50, 370, 1100, 320);
+        category.setBorder(BorderFactory.createLineBorder(Color.GRAY, 3));
 
         JLabel ccsTitle = new JLabel("CCS", SwingConstants.CENTER);
         ccsTitle.setFont(new Font("Arial", Font.BOLD, 28));
         ccsTitle.setForeground(new Color(20, 40, 100));
         ccsTitle.setBounds(0, 10, 1100, 40);
-        categoryPanel.add(ccsTitle);
+        category.add(ccsTitle);
 
         JLabel subtitle = new JLabel("COLLEGE OF COMPUTER STUDIES", SwingConstants.CENTER);
         subtitle.setFont(new Font("Arial", Font.PLAIN, 18));
         subtitle.setBounds(0, 45, 1100, 30);
-        categoryPanel.add(subtitle);
+        category.add(subtitle);
 
+        // 4 rectangular blocks
         for (int i = 0; i < 4; i++) {
             JPanel block = new JPanel();
             block.setBackground(Color.WHITE);
             block.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
             block.setBounds(70 + (i * 250), 100, 200, 180);
-            categoryPanel.add(block);
+            category.add(block);
         }
 
-        add(categoryPanel);
+        add(category);
+    }
 
-        setVisible(true);
+    // ---------------- MAIN ----------------
+    public static void main(String[] args) {
+        new AfterLoginPage();
     }
 }
