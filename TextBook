@@ -3,9 +3,6 @@ import javax.swing.*;
 
 public class UcTextBook {
 
-    /* ===========================
-       HOME PAGE
-       =========================== */
     public static class HomePage extends JFrame {
 
         public HomePage() {
@@ -71,9 +68,6 @@ public class UcTextBook {
         }
     }
 
-    /* ===========================
-       LOGIN PAGE
-       =========================== */
     public static class LoginPage extends JFrame {
 
         public LoginPage() {
@@ -122,6 +116,11 @@ public class UcTextBook {
             JButton loginBtn = new JButton("Login");
             loginBtn.setBounds(73, 290, 100, 40);
 
+            loginBtn.addActionListener(e -> {
+            new AfterLoginPage();  
+            dispose();             
+            });
+
             JLabel signUpText = new JLabel("Don't have an account?");
             signUpText.setForeground(Color.WHITE);
             signUpText.setBounds(75, 350, 150, 20);
@@ -134,7 +133,6 @@ public class UcTextBook {
                 dispose();
             });
 
-            /** FORGOT PASSWORD (Clickable Hyperlink) **/
             JLabel forgotLabel = new JLabel("Forgot Password?");
             forgotLabel.setForeground(new Color(173, 216, 230));
             forgotLabel.setBounds(75, 380, 150, 25);
@@ -175,9 +173,6 @@ public class UcTextBook {
         }
     }
 
-    /* ===========================
-       SIGN UP PAGE
-       =========================== */
     public static class SignUpForm extends JFrame {
 
         public SignUpForm() {
@@ -252,7 +247,6 @@ public class UcTextBook {
                 dispose();
             });
 
-            /** BACK HYPERLINK **/
             JLabel backLabel = new JLabel("Back");
             backLabel.setForeground(new Color(200, 220, 255));
             backLabel.setBounds(20, 430, 100, 30);
@@ -293,9 +287,6 @@ public class UcTextBook {
         }
     }
 
-    /* ===========================
-       CHANGE PASSWORD PAGE
-       =========================== */
     public static class ChangePassword extends JFrame {
 
         public ChangePassword() {
@@ -370,7 +361,6 @@ public class UcTextBook {
                 dispose();
             });
 
-            /** BACK HYPERLINK **/
             JLabel backLabel = new JLabel("Back");
             backLabel.setForeground(new Color(200, 220, 255));
             backLabel.setBounds(20, 430, 100, 30);
@@ -410,11 +400,6 @@ public class UcTextBook {
             setVisible(true);
         }
     }
-
-
-    /* ===========================
-       MAIN START
-       =========================== */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new HomePage());
     }
