@@ -3,6 +3,11 @@ import javax.swing.*;
 
 public class UcTextBook {
 
+    public static class AccountStorage { 
+        public static String savedUser;
+        public static String savedPass;
+    }
+
     public static class HomePage extends JFrame {
 
         public HomePage() {
@@ -117,9 +122,34 @@ public class UcTextBook {
             loginBtn.setBounds(73, 290, 100, 40);
 
             loginBtn.addActionListener(e -> {
-            new AfterLoginPage();  
-            dispose();             
-            });
+
+    String usernameInput = userField.getText();
+    String passwordInput = new String(passField.getPassword());
+
+    // Check empty fields
+    if (usernameInput.isEmpty() || passwordInput.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please fill up all fields.");
+        return;
+    }
+
+    // Check if any account exists
+    if (AccountStorage.savedUser == null || AccountStorage.savedPass == null) {
+        JOptionPane.showMessageDialog(this, "No registered account found.");
+        return;
+    }
+
+    // Check if username and password match
+    if (!usernameInput.equals(AccountStorage.savedUser) ||
+        !passwordInput.equals(AccountStorage.savedPass)) {
+        JOptionPane.showMessageDialog(this, "Incorrect username or password!");
+        return;
+    }
+
+    // Successful login
+    new AfterLoginPage();
+    dispose();
+});
+
 
             JLabel signUpText = new JLabel("Don't have an account?");
             signUpText.setForeground(Color.WHITE);
@@ -240,6 +270,9 @@ public class UcTextBook {
                     JOptionPane.showMessageDialog(this, "Passwords do not match!");
                     return;
                 }
+
+                AccountStorage.savedUser = user;
+                AccountStorage.savedPass = pass;
 
                 JOptionPane.showMessageDialog(this, "Account created successfully!");
 
