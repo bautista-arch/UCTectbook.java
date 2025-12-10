@@ -23,7 +23,31 @@ public class AfterLoginPage extends JFrame {
         }
     }
 
-    // Rounded border for category panels
+    // NEW: Rounded border for search bar and User button
+    static class RoundedFieldBorder extends AbstractBorder {
+        private int radius;
+
+        public RoundedFieldBorder(int radius) {
+            this.radius = radius;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(Color.GRAY);
+            g2.setStroke(new BasicStroke(2));
+            g2.drawRoundRect(x + 1, y + 1, w - 3, h - 3, radius, radius);
+            g2.dispose();
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(8, 12, 8, 12);
+        }
+    }
+
+    // Rounded border for category blocks
     static class RoundedBorder extends AbstractBorder {
         private int radius;
         private Color color;
@@ -75,48 +99,51 @@ public class AfterLoginPage extends JFrame {
     }
 
     private void createTopNavigation() {
-    JPanel topNav = new JPanel(null);
-    topNav.setBackground(Color.WHITE);
-    topNav.setBounds(0, 0, 1200, 70);
+        JPanel topNav = new JPanel(null);
+        topNav.setBackground(Color.WHITE);
+        topNav.setBounds(0, 0, 1200, 70);
 
-    // UC Logo
-    JLabel ucLogo = new JLabel(new ImageIcon("c:\\Users\\ASUS\\Documents\\UcSmallLogo.png")); // replace with your uploaded logo path
-    ucLogo.setBounds(20, 10, 60, 50); // adjust size
-    topNav.add(ucLogo);
+        // UC Logo
+        JLabel ucLogo = new JLabel(new ImageIcon("c:\\Users\\ASUS\\Documents\\ImageFile\\UcSmallLogo.png"));
+        ucLogo.setBounds(20, 10, 60, 50);
+        topNav.add(ucLogo);
 
-    // Search bar with rounded corners
-    JTextField searchBar = new JTextField("Search bar");
-    searchBar.setBounds(120, 20, 700, 30);
-    searchBar.setHorizontalAlignment(JTextField.CENTER);
-    searchBar.setFont(new Font("Arial", Font.PLAIN, 14));
-    searchBar.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2, true)); // rounded border
-    topNav.add(searchBar);
+        // Search bar (FULLY ROUNDED)
+        JTextField searchBar = new JTextField("Search bar");
+        searchBar.setBounds(120, 20, 700, 32);
+        searchBar.setHorizontalAlignment(JTextField.CENTER);
+        searchBar.setFont(new Font("Arial", Font.PLAIN, 14));
+        searchBar.setOpaque(false);
+        searchBar.setBorder(new RoundedFieldBorder(20));  // ⭐ rounded border
+        topNav.add(searchBar);
 
-    // Cart icon
-    JLabel cartIcon = new JLabel(new ImageIcon("c:\\Users\\ASUS\\Documents\\cart.png")); // replace with actual cart icon path
-    cartIcon.setBounds(850, 15, 40, 40);
-    cartIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    topNav.add(cartIcon);
+        // Cart icon
+        JLabel cartIcon = new JLabel(new ImageIcon("c:\\Users\\ASUS\\Documents\\cart.png"));
+        cartIcon.setBounds(850, 15, 40, 40);
+        cartIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        topNav.add(cartIcon);
 
-    // User Button
-    JButton userButton = new JButton("User");
-    userButton.setBounds(900, 20, 120, 30);
-    userButton.setFont(new Font("Arial", Font.BOLD, 14));
-    userButton.setBackground(Color.WHITE);
-    userButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2, true)); // rounded border
-    topNav.add(userButton);
+        // User Button (ROUNDED)
+        JButton userButton = new JButton("User");
+        userButton.setBounds(900, 20, 120, 32);
+        userButton.setFont(new Font("Arial", Font.BOLD, 14));
+        userButton.setBackground(Color.WHITE);
+        userButton.setOpaque(false);
+        userButton.setBorder(new RoundedFieldBorder(20)); // ⭐ rounded button
+        topNav.add(userButton);
 
-    mainPanel.add(topNav);
-}
-
+        mainPanel.add(topNav);
+    }
 
     private void createBanner(String titleText, String subtitleText) {
         if (banner != null)
             mainPanel.remove(banner);
 
-        String[] bannerPaths = { "c:\\Users\\ASUS\\Documents\\Banner1.png",
+        String[] bannerPaths = {
+                "c:\\Users\\ASUS\\Documents\\Banner1.png",
                 "c:\\Users\\ASUS\\Documents\\Banner2.png",
-                "c:\\Users\\ASUS\\Documents\\Banner3.png" };
+                "c:\\Users\\ASUS\\Documents\\Banner3.png"
+        };
 
         ArrayList<ImageIcon> imageList = new ArrayList<>();
         for (String path : bannerPaths) {
@@ -148,8 +175,8 @@ public class AfterLoginPage extends JFrame {
             banner.add(subtitle);
         }
 
-        final int[] index = { 0 };
-        final int[] startX = { 0 };
+        final int[] index = {0};
+        final int[] startX = {0};
 
         imageLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -179,67 +206,62 @@ public class AfterLoginPage extends JFrame {
     }
 
     private void createMenuPanel() {
-    JPanel menuPanel = new JPanel(null);
-    menuPanel.setBackground(Color.BLACK);
-    menuPanel.setBounds(50, 340, 1100, 60);
-    menuPanel.setBorder(new TopBorder(4, Color.BLACK));
+        JPanel menuPanel = new JPanel(null);
+        menuPanel.setBackground(Color.BLACK);
+        menuPanel.setBounds(50, 340, 1100, 60);
+        menuPanel.setBorder(new TopBorder(4, Color.BLACK));
 
-    String[] menuItems = { "Home", "Departments", "Recently Added", "New Arrivals" };
-    int totalWidth = 1100;
-    int itemHeight = 60;
-    int slotWidth = totalWidth / menuItems.length;
+        String[] menuItems = {"Home", "Departments", "Recently Added", "New Arrivals"};
+        int totalWidth = 1100;
+        int itemHeight = 60;
+        int slotWidth = totalWidth / menuItems.length;
 
-    for (int i = 0; i < menuItems.length; i++) {
-        String item = menuItems[i];
+        for (int i = 0; i < menuItems.length; i++) {
+            String item = menuItems[i];
+            JPanel slotPanel = new JPanel(null);
+            slotPanel.setBounds(i * slotWidth, 0, slotWidth, itemHeight);
+            slotPanel.setOpaque(false);
 
-        // Slot panel only holds the label (no click listener here)
-        JPanel slotPanel = new JPanel(null);
-        slotPanel.setBounds(i * slotWidth, 0, slotWidth, itemHeight);
-        slotPanel.setOpaque(false);
+            JLabel menuLabel = new JLabel(item, SwingConstants.CENTER);
+            menuLabel.setFont(new Font("Arial", Font.BOLD, 14));
+            menuLabel.setForeground(Color.WHITE);
+            menuLabel.setBounds(0, 0, slotWidth, itemHeight);
+            menuLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Label for menu text (clickable)
-        JLabel menuLabel = new JLabel(item, SwingConstants.CENTER);
-        menuLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        menuLabel.setForeground(Color.WHITE);
-        menuLabel.setBounds(0, 0, slotWidth, itemHeight);
-        menuLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // pointer only on text
+            menuLabel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (item.equals("Home")) {
+                        createBanner("BANNER", "");
+                        createCategoryPanel("CCS");
+                    } else if (item.equals("Departments")) {
+                        JPopupMenu deptMenu = new JPopupMenu();
+                        deptMenu.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                        String[] departments = {"CBA", "CHM", "CCS", "COF"};
 
-        // Add click listener only to the label
-        menuLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (item.equals("Home")) {
-                    createBanner("BANNER", "");
-                    createCategoryPanel("CCS");
-                } else if (item.equals("Departments")) {
-                    JPopupMenu deptMenu = new JPopupMenu();
-                    deptMenu.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-                    String[] departments = { "CBA", "CHM", "CCS", "COF" };
-                    for (String dept : departments) {
-                        JMenuItem menuItem = new JMenuItem(dept);
-                        menuItem.setPreferredSize(new Dimension(150, 40));
-                        menuItem.addActionListener(ae -> {
-                            createBanner(dept, "");
-                            createCategoryPanel(dept);
-                        });
-                        deptMenu.add(menuItem);
+                        for (String dept : departments) {
+                            JMenuItem menuItem = new JMenuItem(dept);
+                            menuItem.setPreferredSize(new Dimension(150, 40));
+                            menuItem.addActionListener(ae -> {
+                                createBanner(dept, "");
+                                createCategoryPanel(dept);
+                            });
+                            deptMenu.add(menuItem);
+                        }
+                        int x = (slotPanel.getWidth() - deptMenu.getPreferredSize().width) / 2;
+                        deptMenu.show(menuLabel, x, slotPanel.getHeight());
+                    } else {
+                        JOptionPane.showMessageDialog(null, item + " clicked!");
                     }
-                    int x = (slotPanel.getWidth() - deptMenu.getPreferredSize().width) / 2;
-                    deptMenu.show(menuLabel, x, slotPanel.getHeight()); // show under the text
-                } else {
-                    JOptionPane.showMessageDialog(null, item + " clicked!");
                 }
-            }
-        });
+            });
 
-        slotPanel.add(menuLabel);
-        menuPanel.add(slotPanel);
+            slotPanel.add(menuLabel);
+            menuPanel.add(slotPanel);
+        }
+
+        mainPanel.add(menuPanel);
     }
-
-    mainPanel.add(menuPanel);
-}
-
-
 
     private void createCategoryPanel(String department) {
         if (categoryPanel != null)
@@ -265,35 +287,35 @@ public class AfterLoginPage extends JFrame {
         switch (department) {
             case "CBA":
                 subtitle.setText("COLLEGE OF BUSINESS ADMINISTRATION");
-                images = new String[] {
+                images = new String[]{
                         "c:\\Users\\ASUS\\Documents\\CBA_Image1.png",
                         "c:\\Users\\ASUS\\Documents\\CBA_Image2.png",
                         "c:\\Users\\ASUS\\Documents\\CBA_Image3.png",
-                        "c:\\Users\\ASUS\\Documents\\CBA_Image4.png" };
+                        "c:\\Users\\ASUS\\Documents\\CBA_Image4.png"};
                 break;
             case "CHM":
                 subtitle.setText("COLLEGE OF HOSPITALITY MANAGEMENT");
-                images = new String[] {
+                images = new String[]{
                         "c:\\Users\\ASUS\\Documents\\CHM_Image1.png",
                         "c:\\Users\\ASUS\\Documents\\CHM_Image2.png",
                         "c:\\Users\\ASUS\\Documents\\CHM_Image3.png",
-                        "c:\\Users\\ASUS\\Documents\\CHM_Image4.png" };
+                        "c:\\Users\\ASUS\\Documents\\CHM_Image4.png"};
                 break;
             case "COF":
                 subtitle.setText("COLLEGE OF FINE ARTS");
-                images = new String[] {
+                images = new String[]{
                         "c:\\Users\\ASUS\\Documents\\COF_Image1.png",
                         "c:\\Users\\ASUS\\Documents\\COF_Image2.png",
                         "c:\\Users\\ASUS\\Documents\\COF_Image3.png",
-                        "c:\\Users\\ASUS\\Documents\\COF_Image4.png" };
+                        "c:\\Users\\ASUS\\Documents\\COF_Image4.png"};
                 break;
             default:
                 subtitle.setText("COLLEGE OF COMPUTER STUDIES");
-                images = new String[] {
+                images = new String[]{
                         "c:\\Users\\ASUS\\Documents\\CCS_Image1.png",
                         "c:\\Users\\ASUS\\Documents\\CCS_Image2.png",
                         "c:\\Users\\ASUS\\Documents\\CCS_Image3.png",
-                        "c:\\Users\\ASUS\\Documents\\CCS_Image4.png" };
+                        "c:\\Users\\ASUS\\Documents\\CCS_Image4.png"};
                 break;
         }
 
