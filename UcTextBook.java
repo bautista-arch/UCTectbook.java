@@ -437,5 +437,3 @@ public class UcTextBook {
         SwingUtilities.invokeLater(() -> new HomePage());
     }
 }
-
-
