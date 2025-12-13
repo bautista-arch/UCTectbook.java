@@ -23,4 +23,3 @@ class RoundedFieldBorder extends AbstractBorder {
         return new Insets(8, 12, 8, 12);
     }
 }
-
