@@ -123,11 +123,11 @@ public class AfterLoginPage extends JFrame {
         cartIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
         topNav.add(cartIcon);
         cartIcon.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-        new CartPage();  // Open the cart window
-    }
-});
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                loadCartPanel();
+            }
+        });
 
         // User Button
         JButton userButton = new JButton("User");
@@ -243,7 +243,7 @@ public class AfterLoginPage extends JFrame {
                     } else if (item.equals("Departments")) {
                         JPopupMenu deptMenu = new JPopupMenu();
                         deptMenu.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-                        String[] departments = {"CBA", "CHM", "CCS", "COF"};
+                        String[] departments = {"CBA", "CHM", "CCS"};
 
                         for (String dept : departments) {
                             JMenuItem menuItem = new JMenuItem(dept);
@@ -300,10 +300,11 @@ public class AfterLoginPage extends JFrame {
             case "CBA":
                 subtitle.setText("COLLEGE OF BUSINESS ADMINISTRATION");
                 images = new String[]{
-                        "c:\\Users\\ASUS\\Documents\\CBA_Image1.png",
-                        "c:\\Users\\ASUS\\Documents\\CBA_Image2.png",
-                        "c:\\Users\\ASUS\\Documents\\CBA_Image3.png",
-                        "c:\\Users\\ASUS\\Documents\\CBA_Image4.png"};
+                        "c:\\Users\\ASUS\\Downloads\\1_20251207_204022_0000.png",
+                        "c:\\Users\\ASUS\\Downloads\\2_20251207_204022_0001.png",
+                        "c:\\Users\\ASUS\\Downloads\\3_20251207_204022_0002.png",
+                        "c:\\Users\\ASUS\\Downloads\\4_20251207_204022_0003.png"
+                };
                 titles = new String[]{"CBA-FOUND01","CBA-MARK02","CBA-LAW03","CBA-ACC04"};
                 authors = new String[]{"Author A","Author B","Author C","Author D"};
                 prices = new String[]{"₱3500.00","₱4200.00","₱3800.00","₱4500.00"};
@@ -317,44 +318,27 @@ public class AfterLoginPage extends JFrame {
             case "CHM":
                 subtitle.setText("COLLEGE OF HOSPITALITY MANAGEMENT");
                 images = new String[]{
-                        "c:\\Users\\ASUS\\Documents\\CHM_Image1.png",
-                        "c:\\Users\\ASUS\\Documents\\CHM_Image2.png",
-                        "c:\\Users\\ASUS\\Documents\\CHM_Image3.png",
-                        "c:\\Users\\ASUS\\Documents\\CHM_Image4.png"};
-                titles = new String[]{"CHM-FOP01","CHM-FNB02","CHM-HSK03","CHM-HTG04"};
-                authors = new String[]{"Auth E","Auth F","Auth G","Auth H"};
-                prices = new String[]{"₱2800.00","₱3200.00","₱3000.00","₱2700.00"};
+                        "c:\\Users\\ASUS\\Downloads\\1_20251207_204224_0000.png",
+                        "c:\\Users\\ASUS\\Downloads\\2_20251207_204224_0001.png",
+                        "c:\\Users\\ASUS\\Downloads\\3_20251207_204224_0002.png"
+                };
+                titles = new String[]{"CHM-FOP01","CHM-FNB02","CHM-HSK03"};
+                authors = new String[]{"Auth E","Auth F","Auth G"};
+                prices = new String[]{"₱2800.00","₱3200.00","₱3000.00"};
                 descriptions = new String[]{
                         "Front Office procedures...",
                         "Food & Beverage services...",
-                        "Housekeeping operations guide...",
-                        "Hospitality & tourism guide..."
-                };
-                break;
-            case "COF":
-                subtitle.setText("COLLEGE OF FINE ARTS");
-                images = new String[]{
-                        "c:\\Users\\ASUS\\Documents\\COF_Image1.png",
-                        "c:\\Users\\ASUS\\Documents\\COF_Image2.png",
-                        "c:\\Users\\ASUS\\Documents\\COF_Image3.png",
-                        "c:\\Users\\ASUS\\Documents\\COF_Image4.png"};
-                titles = new String[]{"COF-DRW01","COF-CLR02","COF-ILL03","COF-DES04"};
-                authors = new String[]{"Artist A","Artist B","Artist C","Artist D"};
-                prices = new String[]{"₱2200.00","₱2500.00","₱2600.00","₱3000.00"};
-                descriptions = new String[]{
-                        "Fundamentals of Drawing...",
-                        "Color Theory Essentials...",
-                        "Modern illustration guide...",
-                        "Creative visual design approaches..."
+                        "Housekeeping operations guide..."
                 };
                 break;
             default: // CCS
                 subtitle.setText("COLLEGE OF COMPUTER STUDIES");
                 images = new String[]{
-                        "c:\\Users\\ASUS\\Documents\\CCS_Image1.png",
-                        "c:\\Users\\ASUS\\Documents\\CCS_Image2.png",
-                        "c:\\Users\\ASUS\\Documents\\CCS_Image3.png",
-                        "c:\\Users\\ASUS\\Documents\\CCS_Image4.png"};
+                        "c:\\Users\\ASUS\\Documents\\ImageFile\\1_20251207_015751_0000.png",
+                        "c:\\Users\\ASUS\\Documents\\ImageFile\\2_20251207_015751_0001.png",
+                        "c:\\Users\\ASUS\\Documents\\ImageFile\\3_20251207_015751_0002.png",
+                        "c:\\Users\\ASUS\\Documents\\ImageFile\\4_20251207_015752_0003.png"
+                };
                 titles = new String[]{"CC-COMPROG11","CC-COMRPOG12/IT-OOPROG21","IT-SAD21","CCS-DS04"};
                 authors = new String[]{
                         "Hassan Afyouni, Ed.D.","Author Java","System Author","Data Author"};
@@ -368,16 +352,16 @@ public class AfterLoginPage extends JFrame {
                 break;
         }
 
-        // Preload all images for smooth click
-        ImageIcon[] cachedImages = new ImageIcon[4];
-        for (int i = 0; i < 4; i++) {
+        // Preload images dynamically based on array length
+        ImageIcon[] cachedImages = new ImageIcon[images.length];
+        for (int i = 0; i < images.length; i++) {
             ImageIcon raw = new ImageIcon(images[i]);
             Image scaled = raw.getImage().getScaledInstance(200, 180, Image.SCALE_SMOOTH);
             cachedImages[i] = new ImageIcon(scaled);
         }
 
-        // Create clickable image blocks
-        for (int i = 0; i < 4; i++) {
+        // Create clickable image blocks dynamically
+        for (int i = 0; i < images.length; i++) {
             String t = titles[i], a = authors[i], p = prices[i], d = descriptions[i];
             String imgPath = images[i];
             JPanel block = new JPanel(new BorderLayout());
@@ -402,113 +386,172 @@ public class AfterLoginPage extends JFrame {
         mainPanel.repaint();
     }
 
-    private void showBookPopup(String imagePath, String title, String author, String price, String description) {
-        final JDialog popup = new JDialog(this, true);
-        popup.setUndecorated(true); 
-        popup.setSize(1000, 520);
-        popup.setLayout(null);
-        popup.setLocationRelativeTo(this);
+    private void showBookPopup(String imagePath, String code, String author, String price, String description) {
 
-        JPanel outer = new JPanel(null);
-        outer.setBackground(Color.WHITE);
-        outer.setBorder(new RoundedBorder(18, new Color(30, 60, 110), 2));
-        outer.setBounds(0, 0, 1000, 520);
-        popup.add(outer);
+    JFrame popup = new JFrame();
+    popup.setSize(1100, 600);
+    popup.setLocationRelativeTo(null);
+    popup.setUndecorated(true); // remove frame border
+    popup.setLayout(null);
 
-        JLabel closeX = new JLabel("✕", SwingConstants.CENTER);
-        closeX.setFont(new Font("Arial", Font.BOLD, 22));
-        closeX.setBounds(960, 10, 30, 30);
-        closeX.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        closeX.setForeground(Color.DARK_GRAY);
-        closeX.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) { popup.dispose(); }
-            @Override public void mouseEntered(MouseEvent e) { closeX.setForeground(Color.RED); }
-            @Override public void mouseExited(MouseEvent e) { closeX.setForeground(Color.DARK_GRAY); }
-        });
-        outer.add(closeX);
+    JPanel bg = new JPanel(null);
+    bg.setBackground(Color.WHITE);
+    bg.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+    bg.setBounds(0, 0, 1100, 600);
 
-        JPanel imgContainer = new JPanel(null);
-        imgContainer.setBackground(new Color(245, 245, 245));
-        imgContainer.setBounds(30, 30, 340, 460);
-        imgContainer.setBorder(new RoundedBorder(12, new Color(130, 90, 220), 3));
-        outer.add(imgContainer);
+    popup.add(bg);
 
-        ImageIcon raw = new ImageIcon(imagePath);
-        Image scaled = raw.getImage().getScaledInstance(280, 380, Image.SCALE_SMOOTH);
-        JLabel cover = new JLabel(new ImageIcon(scaled));
-        cover.setBounds(30, 30, 280, 380);
-        imgContainer.add(cover);
+    // ===== LEFT CONTAINER (gray background) =====
+    JPanel leftPanel = new JPanel(null);
+    leftPanel.setBackground(new Color(240, 240, 240));
+    leftPanel.setBounds(40, 40, 400, 520);
+    leftPanel.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180), 2));
+    bg.add(leftPanel);
 
-        JPanel details = new JPanel(null);
-        details.setBackground(Color.WHITE);
-        details.setBounds(390, 30, 560, 460);
-        outer.add(details);
+    // Book Image
+    ImageIcon raw = new ImageIcon(imagePath);
+    Image scaled = raw.getImage().getScaledInstance(320, 380, Image.SCALE_SMOOTH);
+    JLabel img = new JLabel(new ImageIcon(scaled));
+    img.setBounds(40, 60, 320, 380);
+    leftPanel.add(img);
 
-        JLabel titleLbl = new JLabel(title);
-        titleLbl.setFont(new Font("Arial", Font.BOLD, 28));
-        titleLbl.setBounds(10, 10, 540, 40);
-        details.add(titleLbl);
+    // ===== CLOSE BUTTON (X) =====
+    JLabel close = new JLabel("✕", SwingConstants.CENTER);
+    close.setFont(new Font("Arial", Font.BOLD, 32));
+    close.setForeground(Color.BLACK);
+    close.setBounds(1040, 10, 50, 50);
+    close.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    close.addMouseListener(new MouseAdapter() {
+        @Override public void mouseClicked(MouseEvent e) {
+            popup.dispose();
+        }
+    });
+    bg.add(close);
 
-        JLabel authorLbl = new JLabel("AUTHOR: " + author);
-        authorLbl.setFont(new Font("Arial", Font.BOLD, 14));
-        authorLbl.setBounds(10, 80, 540, 22);
-        details.add(authorLbl);
+    // ===== TITLE =====
+    JLabel titleLabel = new JLabel(code);
+    titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+    titleLabel.setBounds(470, 60, 600, 40);
+    bg.add(titleLabel);
 
-        JLabel priceLbl = new JLabel(price);
-        priceLbl.setFont(new Font("Arial", Font.BOLD, 26));
-        priceLbl.setForeground(new Color(150, 10, 10));
-        priceLbl.setBounds(10, 115, 200, 30);
-        details.add(priceLbl);
+    // ===== SUBTITLE small uppercase =====
+    JLabel subtitle = new JLabel("A STRUCTURED PROGRAMMING APPROACH IN C 4ᵀᴴ ED");
+    subtitle.setFont(new Font("Arial", Font.PLAIN, 20));
+    subtitle.setBounds(470, 100, 700, 35);
+    bg.add(subtitle);
 
-        JSeparator sep = new JSeparator();
-        sep.setBounds(10, 160, 540, 2);
-        details.add(sep);
+    // ===== AUTHOR =====
+    JLabel auth = new JLabel("AUTHOR:  " + author.toUpperCase());
+    auth.setFont(new Font("Arial", Font.BOLD, 16));
+    auth.setBounds(470, 140, 700, 30);
+    bg.add(auth);
 
-        JLabel about = new JLabel("ABOUT THIS ITEM");
-        about.setFont(new Font("Arial", Font.BOLD, 14));
-        about.setBounds(10, 170, 200, 20);
-        details.add(about);
+    // ===== PRICE (big red) =====
+    JLabel priceLabel = new JLabel(price);
+    priceLabel.setFont(new Font("Arial", Font.BOLD, 36));
+    priceLabel.setForeground(new Color(139, 0, 0));
+    priceLabel.setBounds(470, 180, 400, 50);
+    bg.add(priceLabel);
 
-        JTextArea descArea = new JTextArea(description);
-        descArea.setFont(new Font("Arial", Font.PLAIN, 13));
-        descArea.setLineWrap(true);
-        descArea.setWrapStyleWord(true);
-        descArea.setEditable(false);
-        JScrollPane descScroll = new JScrollPane(descArea);
-        descScroll.setBounds(10, 200, 540, 160);
-        descScroll.setBorder(BorderFactory.createEmptyBorder());
-        details.add(descScroll);
+    // ===== ABOUT THIS ITEM =====
+    JLabel about = new JLabel("ABOUT THIS ITEM");
+    about.setFont(new Font("Arial", Font.BOLD, 18));
+    about.setBounds(470, 230, 500, 30);
+    bg.add(about);
 
-        JButton addToCart = new JButton("ADD TO CART");
-        addToCart.setFont(new Font("Arial", Font.BOLD, 14));
-        addToCart.setBounds(40, 380, 220, 50);
-        addToCart.setFocusPainted(false);
-        addToCart.setBorder(new RoundedFieldBorder(25));
-        addToCart.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        addToCart.addActionListener(e -> {
-    GlobalCartList.cartItems.add(new CartItem(title, price, imagePath));
-    JOptionPane.showMessageDialog(popup, title + " added to cart.");
-});
+    // ===== DESCRIPTION (show first part only) =====
+    String shortDesc = description.length() > 270 ? description.substring(0, 270) + "...SEE MORE" : description;
 
-        details.add(addToCart);
+    JLabel descLabel = new JLabel("<html>" + shortDesc + "</html>");
+    descLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+    descLabel.setBounds(470, 260, 600, 120);
+    bg.add(descLabel);
 
-        JButton purchase = new JButton("PURCHASE");
-        purchase.setFont(new Font("Arial", Font.BOLD, 14));
-        purchase.setBounds(320, 380, 220, 50);
-        purchase.setFocusPainted(false);
-        purchase.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        purchase.addActionListener(e -> JOptionPane.showMessageDialog(popup, "Proceeding to purchase: " + title));
-        purchase.setBackground(new Color(10, 40, 90));
-        purchase.setForeground(Color.WHITE);
-        purchase.setBorder(new RoundedFieldBorder(25));
-        details.add(purchase);
+    // ===== ADD TO CART BUTTON (white border) =====
+    JButton addToCart = new JButton("ADD TO CART");
+    addToCart.setBounds(470, 420, 220, 55);
+    addToCart.setFont(new Font("Arial", Font.BOLD, 18));
+    addToCart.setBackground(Color.WHITE);
+    addToCart.setForeground(Color.BLACK);
+    addToCart.setBorder(new RoundedBorder(50, Color.BLACK, 1));
+    addToCart.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        popup.getRootPane().registerKeyboardAction(e -> popup.dispose(),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_IN_FOCUSED_WINDOW);
+    addToCart.addActionListener(e -> {
+        GlobalCartList.cartItems.add(new CartItem(code, price, imagePath, description));
+        JOptionPane.showMessageDialog(null, code + " added to cart!");
+        popup.dispose();
+    });
 
-        popup.setModal(true);
-        popup.setVisible(true);
+    bg.add(addToCart);
+
+    // ===== PURCHASE BUTTON (Dark Blue) =====
+    JButton purchase = new JButton("PURCHASE");
+    purchase.setBounds(710, 420, 220, 55);
+    purchase.setFont(new Font("Arial", Font.BOLD, 18));
+    purchase.setBackground(new Color(10, 40, 110));
+    purchase.setForeground(Color.WHITE);
+    purchase.setBorder(new RoundedBorder(50, new Color(10, 40, 110), 1));
+    purchase.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+    purchase.addActionListener(e -> {
+        ArrayList<CartItem> single = new ArrayList<>();
+        single.add(new CartItem(code, price, imagePath, description));
+        loadCheckout(single);   // direct checkout
+        popup.dispose();
+    });
+
+    bg.add(purchase);
+
+    popup.setVisible(true);
+}
+
+
+    public void loadHomePage() {
+        if (categoryPanel != null)
+            mainPanel.remove(categoryPanel);
+        createBanner("BANNER", "");
+        createCategoryPanel("CCS");
+        mainPanel.repaint();
+    }
+
+    public void loadCartPanel() {
+        JFrame cartFrame = new JFrame("Shopping Cart");
+        cartFrame.setSize(1200, 800);
+        cartFrame.setLocationRelativeTo(null);
+        cartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        cartFrame.add(new CartPanel(this));
+        cartFrame.setVisible(true);
+    }
+
+    public void loadCheckout(java.util.List<CartItem> items) {
+        if (items.size() == 1) {
+            JFrame checkoutFrame = new JFrame("Checkout");
+            checkoutFrame.setSize(1200, 800);
+            checkoutFrame.setLocationRelativeTo(null);
+            checkoutFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            checkoutFrame.add(new CheckoutPanel(this, items.get(0)));
+            checkoutFrame.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select only one item for checkout.");
+        }
+    }
+
+    public void showDepartmentMenu(JPanel slotPanel, JLabel menuLabel) {
+        JPopupMenu deptMenu = new JPopupMenu();
+        deptMenu.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        String[] departments = {"CBA", "CHM", "CCS"};
+
+        for (String dept : departments) {
+            JMenuItem menuItem = new JMenuItem(dept);
+            menuItem.setPreferredSize(new Dimension(150, 40));
+            menuItem.addActionListener(ae -> {
+                createBanner(dept, "");
+                createCategoryPanel(dept);
+            });
+            deptMenu.add(menuItem);
+        }
+        int x = (slotPanel.getWidth() - deptMenu.getPreferredSize().width) / 2;
+        deptMenu.show(menuLabel, x, slotPanel.getHeight());
     }
 
     public static void main(String[] args) {
