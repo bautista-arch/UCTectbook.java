@@ -16,4 +16,3 @@ class TopBorder extends AbstractBorder {
         g.fillRect(x, y, width, thickness);
     }
 }
-
