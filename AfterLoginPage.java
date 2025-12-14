@@ -15,6 +15,7 @@ public class AfterLoginPage extends JFrame {
         setSize(1200, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setResizable(false);
 
         mainPanel = new JPanel();
         mainPanel.setLayout(null);
@@ -327,6 +328,7 @@ public class AfterLoginPage extends JFrame {
     JFrame popup = new JFrame();
     popup.setSize(1100, 600);
     popup.setLocationRelativeTo(null);
+    popup.setResizable(false);
     popup.setUndecorated(true); // remove frame border
     popup.setLayout(null);
 
@@ -454,6 +456,7 @@ public class AfterLoginPage extends JFrame {
         JFrame cartFrame = new JFrame("Shopping Cart");
         cartFrame.setSize(1200, 800);
         cartFrame.setLocationRelativeTo(null);
+        cartFrame.setResizable(false);
         cartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         cartFrame.add(new CartPanel(this));
         cartFrame.setVisible(true);
@@ -463,6 +466,7 @@ public class AfterLoginPage extends JFrame {
         JFrame checkoutFrame = new JFrame("Checkout");
         checkoutFrame.setSize(1200, 700);
         checkoutFrame.setLocationRelativeTo(null);
+        checkoutFrame.setResizable(false);
         checkoutFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         checkoutFrame.add(new CheckoutPanel(this, items));
         checkoutFrame.setVisible(true);
