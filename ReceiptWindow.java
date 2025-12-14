@@ -176,4 +176,3 @@ public class ReceiptWindow extends JFrame {
     }
    }
 }
-
