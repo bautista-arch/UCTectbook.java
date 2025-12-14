@@ -1,413 +1,190 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.time.LocalDate;
-import java.util.Random;
+import java.util.*;
 import javax.swing.*;
 
-public class CheckoutPanel extends JPanel {
+public class CartPanel extends JPanel {
 
     private AfterLoginPage parent;
-    private java.util.List<CartItem> items;
-    private JPanel menuPanel;
+    private Map<CartItem, JCheckBox> selectionMap = new HashMap<>();
+    private JCheckBox selectAll;
+    private JLabel subtotalLabel;
+    private JLabel totalLabel;
+    private JPanel itemsPanel;
+    private JScrollPane scroll;
 
-    // Rounded border for buttons
-    static class RoundedBorder extends javax.swing.border.AbstractBorder {
-        private final int radius;
-        private final Color color;
-        private final int thickness;
-
-        public RoundedBorder(int radius, Color color, int thickness) {
-            this.radius = radius;
-            this.color = color;
-            this.thickness = thickness;
-        }
-
-        @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(color);
-            g2.setStroke(new BasicStroke(thickness));
-            g2.drawRoundRect(x + thickness / 2, y + thickness / 2, width - thickness, height - thickness,
-                    radius, radius);
-        }
-
-        @Override
-        public Insets getBorderInsets(Component c) {
-            return new Insets(thickness, thickness, thickness, thickness);
-        }
-    }
-
-    public CheckoutPanel(AfterLoginPage parent, java.util.List<CartItem> items) {
+    public CartPanel(AfterLoginPage parent) {
         this.parent = parent;
-        this.items = items;
 
         setLayout(null);
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(1200, 700));
+        setPreferredSize(new Dimension(1200, 800));
 
         createMenuPanel();
 
-        // CHECKOUT title
-        JLabel checkoutTitle = new JLabel("CHECKOUT");
-        checkoutTitle.setFont(new Font("Arial", Font.BOLD, 32));
-        checkoutTitle.setBounds(50, 70, 300, 50);
-        add(checkoutTitle);
+        JLabel title = new JLabel("USER'S CART");
+        title.setFont(new Font("Arial", Font.BOLD, 36));
+        title.setBounds(50, 70, 400, 40);
+        add(title);
 
-        // Separator
-        JSeparator sep1 = new JSeparator();
-        sep1.setBounds(50, 125, 1100, 2);
-        add(sep1);
+        JPanel itemsPanel = new JPanel();
+        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
+        itemsPanel.setBackground(Color.WHITE);
+        this.itemsPanel = itemsPanel;
 
-        // Display items
-        int yPos = 150;
-        for (CartItem item : items) {
-            // Item image
-            ImageIcon raw = new ImageIcon(item.imagePath);
-            Image scaled = raw.getImage().getScaledInstance(80, 100, Image.SCALE_SMOOTH);
-            JLabel itemImg = new JLabel(new ImageIcon(scaled));
-            itemImg.setBounds(50, yPos, 80, 100);
-            add(itemImg);
+        // --- HEADER (Select All + Summary)
+        JPanel header = new JPanel(null);
+        header.setPreferredSize(new Dimension(1100, 40));
+        header.setBackground(Color.WHITE);
 
-            // Item title
-            JLabel itemTitle = new JLabel(item.title);
-            itemTitle.setFont(new Font("Arial", Font.BOLD, 18));
-            itemTitle.setBounds(150, yPos, 600, 30);
-            add(itemTitle);
+        selectAll = new JCheckBox();
+        selectAll.setBounds(10, 8, 24, 24);
+        selectAll.setBackground(Color.WHITE);
 
-            // Item description
-            JLabel itemDesc = new JLabel(
-                item.description != null && !item.description.isEmpty()
-                    ? item.description
-                    : "No description"
-            );
-            itemDesc.setFont(new Font("Arial", Font.PLAIN, 12));
-            itemDesc.setForeground(Color.GRAY);
-            itemDesc.setBounds(150, yPos + 35, 600, 20);
-            add(itemDesc);
-
-            // Item price
-            JLabel itemPrice = new JLabel(item.price);
-            itemPrice.setFont(new Font("Arial", Font.BOLD, 20));
-            itemPrice.setForeground(new Color(150, 0, 0));
-            itemPrice.setBounds(150, yPos + 60, 200, 30);
-            add(itemPrice);
-
-            yPos += 120; // Space for next item
-        }
-
-        // Separator after items
-        JSeparator sep2 = new JSeparator();
-        sep2.setBounds(50, yPos + 20, 1100, 2);
-        add(sep2);
-
-        addPaymentMethods(yPos + 30);
-
-        // Separator
-        JSeparator sep3 = new JSeparator();
-        sep3.setBounds(50, yPos + 180, 1100, 2);
-        add(sep3);
-
-        addPaymentDetails(yPos + 200);
-    }
-
-    /* ================= PAYMENT METHODS ================= */
-
-    private void addPaymentMethods(int yPos) {
-        JLabel paymentLabel = new JLabel("PAYMENT METHODS");
-        paymentLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        paymentLabel.setBounds(50, yPos, 200, 25);
-        add(paymentLabel);
-
-        JLabel selectLabel = new JLabel("SELECT A METHOD");
-        selectLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        selectLabel.setForeground(Color.GRAY);
-        selectLabel.setBounds(50, yPos + 25, 200, 20);
-        add(selectLabel);
-
-        JButton cashBtn = new JButton("CASH PAYMENT (FACE-TO-FACE)");
-        cashBtn.setBounds(80, yPos + 55, 350, 50);
-        stylePaymentButton(cashBtn);
-        cashBtn.addActionListener(e -> {
-            showReceipt();
+        selectAll.addActionListener(e -> {
+            boolean sel = selectAll.isSelected();
+            for (JCheckBox cb : selectionMap.values()) cb.setSelected(sel);
+            updateSummary();
         });
-        add(cashBtn);
 
-        JButton onlineBtn = new JButton("ONLINE PAYMENT");
-        onlineBtn.setBounds(770, yPos + 55, 350, 50);
-        stylePaymentButton(onlineBtn);
-        onlineBtn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Online payment not implemented yet.");
-        });
-        add(onlineBtn);
-    }
+        JLabel selLabel = new JLabel("Select All");
+        selLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        selLabel.setBounds(35, 8, 100, 24);
 
-    private void stylePaymentButton(JButton btn) {
-        btn.setFont(new Font("Arial", Font.BOLD, 13));
-        btn.setBackground(Color.WHITE);
-        btn.setForeground(Color.BLACK);
-        btn.setFocusPainted(false);
-        btn.setContentAreaFilled(false);
-        btn.setOpaque(true);
-        btn.setBorder(new RoundedBorder(30, Color.BLACK, 1));
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        header.add(selectAll);
+        header.add(selLabel);
 
-        btn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) {
-                btn.setBackground(new Color(240, 240, 240));
-            }
-            @Override public void mouseExited(MouseEvent e) {
-                btn.setBackground(Color.WHITE);
-            }
-            @Override public void mousePressed(MouseEvent e) {
-                btn.setBackground(new Color(220, 220, 220));
-            }
-            @Override public void mouseReleased(MouseEvent e) {
-                btn.setBackground(new Color(240, 240, 240));
-            }
-        });
-    }
+        subtotalLabel = new JLabel("Subtotal: ₱0.00");
+        subtotalLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        subtotalLabel.setBounds(700, 8, 200, 24);
+        header.add(subtotalLabel);
 
-    /* ================= PAYMENT DETAILS ================= */
-
-    private void addPaymentDetails(int yPos) {
-        JLabel paymentDetailsLabel = new JLabel("PAYMENT DETAILS");
-        paymentDetailsLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        paymentDetailsLabel.setBounds(50, yPos, 200, 25);
-        add(paymentDetailsLabel);
-
-        JLabel itemSubLabel = new JLabel("ITEM SUBTOTAL");
-        itemSubLabel.setBounds(70, yPos + 30, 150, 20);
-        add(itemSubLabel);
-
-        String subtotal = calculateTotalPrice();
-        JLabel subtotalPrice = new JLabel(subtotal);
-        subtotalPrice.setFont(new Font("Arial", Font.BOLD, 14));
-        subtotalPrice.setForeground(new Color(150, 0, 0));
-        subtotalPrice.setBounds(800, yPos + 30, 250, 20);
-        add(subtotalPrice);
-
-        JLabel totalLabel = new JLabel("TOTAL PAYMENT");
+        totalLabel = new JLabel("Total: ₱0.00");
         totalLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        totalLabel.setBounds(70, yPos + 70, 200, 25);
-        add(totalLabel);
+        totalLabel.setBounds(860, 8, 200, 24);
+        header.add(totalLabel);
 
-        JLabel totalPrice = new JLabel(subtotal);
-        totalPrice.setFont(new Font("Arial", Font.BOLD, 18));
-        totalPrice.setForeground(new Color(150, 0, 0));
-        totalPrice.setBounds(800, yPos + 70, 250, 25);
-        add(totalPrice);
-    }
+        itemsPanel.add(header);
 
-    private String calculateTotalPrice() {
-        double total = 0.0;
-        for (CartItem item : items) {
-            // Assuming price is like "₱100.00"
-            String priceStr = item.price.replace("₱", "").trim();
-            try {
-                total += Double.parseDouble(priceStr);
-            } catch (NumberFormatException e) {
-                // Handle parsing error, maybe log or skip
-            }
-        }
-        return String.format("₱%.2f", total);
-    }
-
-    private void showReceipt() {
-        // Clear all components except menuPanel
-        Component[] components = getComponents();
-        for (Component c : components) {
-            if (c != menuPanel) {
-                remove(c);
+        // --- ITEMS
+        if (GlobalCartList.cartItems.isEmpty()) {
+            JLabel empty = new JLabel("Your cart is empty.");
+            empty.setFont(new Font("Arial", Font.BOLD, 20));
+            empty.setAlignmentX(Component.CENTER_ALIGNMENT);
+            itemsPanel.add(Box.createVerticalStrut(30));
+            itemsPanel.add(empty);
+        } else {
+            for (CartItem item : GlobalCartList.cartItems) {
+                itemsPanel.add(createItemPanel(item));
+                itemsPanel.add(createGradientBar()); // gradient like your screenshot
             }
         }
 
-        // Complete purchase
-        LocalDate today = LocalDate.now();
-        for (CartItem item : items) {
-            GlobalTransactionHistory.transactions.add(
-                new Transaction(item.title, item.price, today.toString())
-            );
-            GlobalCartList.cartItems.remove(item);
-        }
+        JScrollPane scroll = new JScrollPane(itemsPanel);
+        scroll.setBounds(50, 120, 1100, 540);
+        scroll.setBorder(null);
+        add(scroll);
+        this.scroll = scroll;
 
-        // Add receipt content
-        addReceiptContent();
+        // --- CHECKOUT BUTTON
+        JButton checkoutBtn = new JButton("Check Out");
+        checkoutBtn.setBounds(450, 680, 300, 55);
+        checkoutBtn.setFont(new Font("Arial", Font.BOLD, 20));
+        checkoutBtn.setBackground(new Color(10, 30, 70));
+        checkoutBtn.setForeground(Color.WHITE);
+        checkoutBtn.setFocusPainted(false);
+        checkoutBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        checkoutBtn.setBorder(new RoundedBorder(30, new Color(10, 30, 70), 2));
 
-        revalidate();
-        repaint();
-    }
-
-    private void addReceiptContent() {
-        // Outer white panel with margin, centered and smaller
-        JPanel outer = new JPanel(null);
-        outer.setBackground(Color.WHITE);
-        outer.setBounds(100, 100, 1000, 600); // Centered, smaller size
-        outer.setBorder(BorderFactory.createLineBorder(new Color(200,200,200)));
-        add(outer);
-
-        // Header area with light-blue gradient panel
-        JPanel header = new JPanel() {
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g;
-                GradientPaint gp = new GradientPaint(0, 0, new Color(190,215,255),
-                        0, getHeight(), new Color(230,245,255));
-                g2.setPaint(gp);
-                g2.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
-        header.setBounds(0, 0, 1000, 120);
-        header.setLayout(null);
-        header.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        outer.add(header);
-
-        // UC logo placeholder (left)
-        JLabel logo = new JLabel("UC", SwingConstants.CENTER);
-        logo.setFont(new Font("Arial", Font.BOLD, 36));
-        logo.setForeground(new Color(10,40,90));
-        logo.setBounds(12, 18, 90, 80);
-        logo.setBorder(BorderFactory.createLineBorder(new Color(170,170,170)));
-        header.add(logo);
-
-        // University info
-        JLabel uni = new JLabel("UNIVERSITY OF CEBU - MAIN CAMPUS");
-        uni.setFont(new Font("Arial", Font.BOLD, 18));
-        uni.setBounds(120, 16, 540, 26);
-        header.add(uni);
-
-        JLabel addr = new JLabel("OSMENA BLVD. COR. SANCIANGKO ST., CEBU CITY 6000, CEBU, PHILIPPINES");
-        addr.setFont(new Font("Arial", Font.PLAIN, 11));
-        addr.setBounds(120, 40, 700, 18);
-        header.add(addr);
-
-        JLabel tel = new JLabel("TEL. NO. (63) (32) 255-7777");
-        tel.setFont(new Font("Arial", Font.PLAIN, 11));
-        tel.setBounds(120, 58, 300, 16);
-        header.add(tel);
-
-        // Semester box (right)
-        JTextField semField = new JTextField("1ST SEMESTER S.Y. 2025-2026");
-        semField.setEditable(false);
-        semField.setHorizontalAlignment(JTextField.CENTER);
-        semField.setBounds(650, 18, 240, 26);
-        header.add(semField);
-
-        // Priority (right below semester)
-        JTextField priorityField = new JTextField(generatePriority());
-        priorityField.setEditable(false);
-        priorityField.setHorizontalAlignment(JTextField.CENTER);
-        priorityField.setBounds(650, 58, 240, 26);
-        header.add(priorityField);
-
-        // Student name row (below header)
-        JTextField studentField = new JTextField("FIRST NAME, M.I., LAST NAME");
-        studentField.setEditable(false);
-        studentField.setBounds(20, 130, 620, 28);
-        outer.add(studentField);
-
-        JTextField courseField = new JTextField("BSIT");
-        courseField.setEditable(false);
-        courseField.setBounds(660, 130, 180, 28);
-        outer.add(courseField);
-
-        // Table area
-        JPanel table = new JPanel(null);
-        table.setBackground(Color.WHITE);
-        table.setBorder(BorderFactory.createLineBorder(new Color(220,220,220)));
-        table.setBounds(20, 170, 960, 420);
-        outer.add(table);
-
-        // Column labels
-        JLabel colEdp = new JLabel("EDP CODE");
-        colEdp.setFont(new Font("Arial", Font.BOLD, 13));
-        colEdp.setBounds(20, 10, 120, 20);
-        table.add(colEdp);
-
-        JLabel colSub = new JLabel("SUBJECT");
-        colSub.setFont(new Font("Arial", Font.BOLD, 13));
-        colSub.setBounds(140, 10, 150, 20);
-        table.add(colSub);
-
-        JLabel colTitle = new JLabel("BOOK TITLE");
-        colTitle.setFont(new Font("Arial", Font.BOLD, 13));
-        colTitle.setBounds(300, 10, 360, 20);
-        table.add(colTitle);
-
-        JLabel colPrice = new JLabel("PRICE");
-        colPrice.setFont(new Font("Arial", Font.BOLD, 13));
-        colPrice.setBounds(680, 10, 120, 20);
-        table.add(colPrice);
-
-        // Add items
-        int y = 40;
-        double subtotal = 0.0;
-        for (CartItem it : items) {
-            JLabel edp = new JLabel(it.edpCode != null ? it.edpCode : "");
-            edp.setBounds(20, y, 120, 18);
-            table.add(edp);
-
-            JLabel sub = new JLabel(it.subjectCode);
-            sub.setBounds(140, y, 150, 18);
-            table.add(sub);
-
-            JLabel tt = new JLabel(it.title);
-            tt.setBounds(300, y, 360, 18);
-            table.add(tt);
-
-            JLabel pr = new JLabel(it.price);
-            pr.setHorizontalAlignment(SwingConstants.RIGHT);
-            pr.setBounds(680, y, 120, 18);
-            table.add(pr);
-
-            subtotal += parsePrice(it.price);
-            y += 28;
-            // draw thin line
-            JSeparator s = new JSeparator();
-            s.setBounds(10, y - 8, 940, 1);
-            table.add(s);
-        }
-
-        // Subtotal and total area (below table)
-        JLabel lblSubtotal = new JLabel("ITEM SUBTOTAL");
-        lblSubtotal.setFont(new Font("Arial", Font.PLAIN, 13));
-        lblSubtotal.setBounds(20, 360, 200, 30);
-        table.add(lblSubtotal);
-
-        JLabel valSubtotal = new JLabel(String.format("₱%,.2f", subtotal));
-        valSubtotal.setBounds(680, 360, 120, 30);
-        valSubtotal.setHorizontalAlignment(SwingConstants.RIGHT);
-        valSubtotal.setFont(new Font("Arial", Font.PLAIN, 13));
-        table.add(valSubtotal);
-
-        JLabel lblTotal = new JLabel("TOTAL PAYMENT");
-        lblTotal.setFont(new Font("Arial", Font.BOLD, 14));
-        lblTotal.setBounds(20, 392, 200, 30);
-        table.add(lblTotal);
-
-        JLabel valTotal = new JLabel(String.format("₱%,.2f", subtotal));
-        valTotal.setBounds(680, 392, 120, 30);
-        valTotal.setHorizontalAlignment(SwingConstants.RIGHT);
-        valTotal.setFont(new Font("Arial", Font.BOLD, 14));
-        table.add(valTotal);
-
-        // Done button
-        JButton done = new JButton("DONE");
-        done.setBounds(540, 605, 120, 36);
-        done.addActionListener(e -> {
-            if (parent != null) {
-                Window window = SwingUtilities.getWindowAncestor(this);
-                if (window != null) window.dispose();
-                parent.loadHomePage();
+        checkoutBtn.addActionListener(e -> {
+            java.util.List<CartItem> selected = getSelectedItems();
+            if (selected.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please select items to checkout.");
+            } else {
+                parent.loadCheckout(selected);
             }
         });
-        outer.add(done);
+
+        add(checkoutBtn);
     }
 
-    private String generatePriority() {
-        Random r = new Random();
-        int num = 100000000 + r.nextInt(900000000);
-        return Integer.toString(num);
-    }
+    private JPanel createItemPanel(CartItem item) {
+    JPanel box = new JPanel(null);
+    box.setPreferredSize(new Dimension(1100, 185));
+    box.setBackground(Color.WHITE);
+
+    // --- CHECKBOX (left side)
+    JCheckBox selector = new JCheckBox();
+    selector.setBounds(10, 70, 26, 26);
+    selector.setBackground(Color.WHITE);
+    selector.setFont(new Font("Arial", Font.BOLD, 20));
+    selectionMap.put(item, selector);
+    selector.addActionListener(e -> updateSummary());
+    box.add(selector);
+
+    // --- BOOK IMAGE (120x150)
+    ImageIcon raw = new ImageIcon(item.imagePath);
+    Image scaled = raw.getImage().getScaledInstance(140, 160, Image.SCALE_SMOOTH);
+    JLabel img = new JLabel(new ImageIcon(scaled));
+    img.setBounds(60, 10, 140, 160);
+    box.add(img);
+
+    // --- TITLE (bold)
+    JLabel title = new JLabel(item.title.toUpperCase());
+    title.setFont(new Font("Arial", Font.BOLD, 22));
+    title.setBounds(240, 20, 700, 30);
+    box.add(title);
+
+    // --- SUBTITLE / DESCRIPTION
+    JLabel subtitle = new JLabel(
+        item.description != null ? item.description 
+        : "A STRUCTURED PROGRAMMING APPROACH IN C 4TH ED"
+    );
+    subtitle.setFont(new Font("Arial", Font.PLAIN, 14));
+    subtitle.setBounds(240, 55, 620, 20);
+    box.add(subtitle);
+
+    // --- PRICE (big, dark red)
+    JLabel price = new JLabel(item.price);
+    price.setFont(new Font("Arial", Font.BOLD, 30));
+    price.setForeground(new Color(139, 0, 0)); // dark red
+    price.setBounds(240, 85, 500, 50);
+    box.add(price);
+
+    // --- TRASH BUTTON (right side)
+    ImageIcon deleteIcon = new ImageIcon("c:\\Users\\ASUS\\Documents\\ImageFile\\trash.png");
+    Image d = deleteIcon.getImage().getScaledInstance(42, 42, Image.SCALE_SMOOTH);
+    JButton remove = new JButton(new ImageIcon(d));
+    remove.setBounds(1030, 65, 42, 42);
+    remove.setBorder(null);
+    remove.setContentAreaFilled(false);
+    remove.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+    remove.addActionListener(e -> {
+        GlobalCartList.cartItems.remove(item);
+        refreshCart();
+    });
+
+    box.add(remove);
+
+    return box;
+}
+
+
+    private JPanel createGradientBar() {
+    JPanel bar = new JPanel() {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.setColor(new Color(200, 200, 200));
+            g.fillRect(0, 0, getWidth(), 2);
+        }
+    };
+    bar.setPreferredSize(new Dimension(1100, 35));
+    bar.setBackground(Color.WHITE);
+    return bar;
+}
+
 
     private double parsePrice(String priceStr) {
         try {
@@ -419,40 +196,125 @@ public class CheckoutPanel extends JPanel {
         }
     }
 
+    private void updateSummary() {
+        double subtotal = 0.0;
+        for (Map.Entry<CartItem, JCheckBox> e : selectionMap.entrySet()) {
+            if (e.getValue().isSelected()) {
+                subtotal += parsePrice(e.getKey().price);
+            }
+        }
+
+        subtotalLabel.setText(String.format("Subtotal: ₱%,.2f", subtotal));
+        totalLabel.setText(String.format("Total: ₱%,.2f", subtotal));
+
+        boolean all = !selectionMap.isEmpty() &&
+                selectionMap.values().stream().allMatch(JCheckBox::isSelected);
+        selectAll.setSelected(all);
+    }
+
+    private void refreshCart() {
+        selectionMap.clear();
+        itemsPanel.removeAll();
+
+        // Rebuild header
+        JPanel header = new JPanel(null);
+        header.setPreferredSize(new Dimension(1100, 40));
+        header.setBackground(Color.WHITE);
+
+        selectAll = new JCheckBox();
+        selectAll.setBounds(10, 8, 24, 24);
+        selectAll.setBackground(Color.WHITE);
+
+        selectAll.addActionListener(e -> {
+            boolean sel = selectAll.isSelected();
+            for (JCheckBox cb : selectionMap.values()) cb.setSelected(sel);
+            updateSummary();
+        });
+
+        JLabel selLabel = new JLabel("Select All");
+        selLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        selLabel.setBounds(35, 8, 100, 24);
+
+        header.add(selectAll);
+        header.add(selLabel);
+
+        subtotalLabel = new JLabel("Subtotal: ₱0.00");
+        subtotalLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        subtotalLabel.setBounds(700, 8, 200, 24);
+        header.add(subtotalLabel);
+
+        totalLabel = new JLabel("Total: ₱0.00");
+        totalLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        totalLabel.setBounds(860, 8, 200, 24);
+        header.add(totalLabel);
+
+        itemsPanel.add(header);
+
+        // Rebuild items
+        if (GlobalCartList.cartItems.isEmpty()) {
+            JLabel empty = new JLabel("Your cart is empty.");
+            empty.setFont(new Font("Arial", Font.BOLD, 20));
+            empty.setAlignmentX(Component.CENTER_ALIGNMENT);
+            itemsPanel.add(Box.createVerticalStrut(30));
+            itemsPanel.add(empty);
+        } else {
+            for (CartItem item : GlobalCartList.cartItems) {
+                itemsPanel.add(createItemPanel(item));
+                itemsPanel.add(createGradientBar());
+            }
+        }
+
+        itemsPanel.revalidate();
+        itemsPanel.repaint();
+        scroll.revalidate();
+        scroll.repaint();
+        updateSummary();
+    }
+
+    private java.util.List<CartItem> getSelectedItems() {
+        java.util.List<CartItem> list = new ArrayList<>();
+        for (Map.Entry<CartItem, JCheckBox> e : selectionMap.entrySet()) {
+            if (e.getValue().isSelected()) list.add(e.getKey());
+        }
+        return list;
+    }
+
+    // -----------------------
+    // Menu Bar
+    // -----------------------
     private void createMenuPanel() {
-        menuPanel = new JPanel(null);
+        JPanel menuPanel = new JPanel(null);
         menuPanel.setBackground(Color.BLACK);
         menuPanel.setBounds(0, 0, 1200, 60);
 
         String[] menuItems = {"Home", "Departments", "Recently Added", "New Arrivals"};
-        int slotWidth = 1200 / menuItems.length;
+        int totalWidth = 1100;
+        int itemHeight = 60;
+        int slotWidth = totalWidth / menuItems.length;
 
         for (int i = 0; i < menuItems.length; i++) {
-            String menuItem = menuItems[i];
-
+            String item = menuItems[i];
             JPanel slotPanel = new JPanel(null);
-            slotPanel.setBounds(i * slotWidth, 0, slotWidth, 60);
+            slotPanel.setBounds(i * slotWidth, 0, slotWidth, itemHeight);
             slotPanel.setOpaque(false);
 
-            JLabel menuLabel = new JLabel(menuItem, SwingConstants.CENTER);
+            JLabel menuLabel = new JLabel(item, SwingConstants.CENTER);
             menuLabel.setFont(new Font("Arial", Font.BOLD, 14));
             menuLabel.setForeground(Color.WHITE);
-            menuLabel.setBounds(0, 0, slotWidth, 60);
-            menuLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            menuLabel.setBounds(0, 0, slotWidth, itemHeight);
+            menuLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             menuLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (parent == null) return;
-
-                    if (menuItem.equals("Home")) {
-                        Window window = SwingUtilities.getWindowAncestor(CheckoutPanel.this);
-                        if (window != null) window.dispose();
-                        parent.loadHomePage();
-                    } else if (menuItem.equals("Departments")) {
-                        parent.showDepartmentMenu(slotPanel, menuLabel);
-                    } else {
-                        JOptionPane.showMessageDialog(null, menuItem + " clicked!");
+                    if (parent != null) {
+                        if (item.equals("Home")) {
+                            Window window = SwingUtilities.getWindowAncestor(CartPanel.this);
+                            if (window != null) window.dispose();
+                            parent.loadHomePage();
+                        }
+                        else if (item.equals("Departments")) parent.showDepartmentMenu(slotPanel, menuLabel);
+                        else JOptionPane.showMessageDialog(null, item + " clicked!");
                     }
                 }
             });
@@ -464,4 +326,3 @@ public class CheckoutPanel extends JPanel {
         add(menuPanel);
     }
 }
-
